@@ -1,20 +1,20 @@
 //
 // Created by Timo Niemann on 11.06.24.
 //
-#include <stdio.h>
-#ifndef MALLOC_H
+#include <stdio.h>      
 #include "malloc.h"
-#endif
 
 // if string.h is included the define would shadow the strcpy define in string.h
 #ifndef strcpy
 // create a MAKRO that will create two char pointers which copy the addresses of the destination and source
 // these are iterated over and the destination is aligned the current value the pointer s_c is pointing to
-#define strcpy(d, s) 	char *d_c = d, *s_c = s; while((*d_c++ = *s_c++))
-#endif
+#define strcpy(d, s) 	char *d_c = d, *s_c = s; while((*d_c++ = *s_c++))       // se how the pointer does not apply to the type
+#endif                                                                          // int *x, y; would create x as a pointer but y is a normal int 
 
-#define pstr(s)         char *str = s; while(*str) printf("%c", *str++)
-#define strnull(s)      if(!s) return
+// this def pstr just prints each character of the string with pointer arithmetic
+#define pstr(s)         char *str = s; while(*str) printf("%c", *str++) // no brackets on *str++ because we want to increment the pointer
+#define strnull(s)      if(!s) return           // because this is a macro and macros are replaced in code this return will actually exit
+                                                // the function it is used in
 
 /**
  * Get the length of a string given as parameter
@@ -41,7 +41,7 @@ void mystic_string_function(void){
     // get a pointer to a legitimate memory location
 	char *s_copy = (char*)malloc(strlen(s) + 1);
     // strnull checks if the string is null or not, returns when necessary
-    strnull(s);
+    strnull(s_copy);
 
     // copies the string s as source to the destination s_copy
 	strcpy(s_copy, s);
@@ -58,7 +58,7 @@ void mystic_string_function(void){
     printf("\n\n");
 
     // print with pointer arithmetic
-    pstr(s_copy);
+    pstr(s);
 
     // increment heap pointer
 	free(s_copy);
