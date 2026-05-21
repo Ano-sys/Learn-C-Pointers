@@ -6,27 +6,31 @@ How to C Pointer:
 Pointers are one major part of the C programming language, they are used to address memory addresses.
 
 
-What is a heap or a stack?
-Think abstract, heap... HEAP! The heap is a heap everything trash is pushed to the bottom of the heap.
-Like moving literal trash together.
-The Heap contains all memory which is not explizitly asked for (malloc), for example int x, x is placed on the heap
-The Stack is like a pile of books. A new book is placed on top
-Contains all memory which was asked for by malloc, calloc, ...
+What is the heap and what is the stack?
+The stack contains automatic local variables and function call data.
+For example, a local int x inside a function is typically stored in that function's stack frame.
+The stack is managed automatically: when the function returns, its local variables are gone.
 
+The heap contains memory which was explicitly requested with malloc, calloc, realloc, ...
+Heap memory stays allocated until you release it with free.
+
+Important:
+A pointer variable can live on the stack while pointing to memory on the heap.
+For example, int *p may be a local stack variable, but malloc can make p point to heap memory.
+
+higher addresses
+---------
+| Stack |   |  stack pointer moves here as functions are called and return
+|       |   v  grows downwards
 ---------
 |       |
-| Heap  |   | grows downwards
-|       |   v
+| Free  |   // simplified view: stack and heap grow toward each other
 |       |
 ---------
-|       |
-| Free  |   // they can meet but in 64 bit you have a so gigantic space of max address and min address (2^64 bytes (2 exabytes)
-|       |   // so gigantic that the bare task to allocate this much memory would probably take years
-|       |
----------   <- Here is the stackpointer which indicates the current position of the last allocated memory
-| Stack |   ^
+| Heap  |   ^
 |       |   | grows upwards
 ---------
+lower addresses
 */
 
 // lets include stdio and especially stdlib, stdlib contains standard memory 'altering' functions
@@ -77,7 +81,7 @@ Starting here
 this example shows how a pointer is created from a variable, especialy how the address is accessed
 */
 void page1(){
-    // static variable x which is stored on the heap
+    // local variable x which is typically stored on the stack
     int x = 4;
     // pointer to the address of x
     int *px = &x;       // se the operators * and & the & gets the address of x like 0x123456 the * is the pointer operator
@@ -129,8 +133,8 @@ void page4(){
     int x = 4;
     // we want to have a fresh pointer that is not dependent on x
     // we utilize the malloc functions derived by the library stdlib
-    // the pointer is now an int* cast to the void* malloc returns
-    // malloc gives a pointer to the first address of a 4 byte defined large space on the stack
+    // malloc returns a void*, which can be assigned to an int* in C
+    // malloc gives a pointer to the first address of a sizeof(int) byte large space on the heap
     int *error = (int*)malloc(sizeof(int));
     *error = 0;
     print_vars(x, error);
@@ -138,7 +142,7 @@ void page4(){
     x = even_more_advanced_increment(x, error);
     print_vars(x, error);
 
-    // because we allocated memory on the stack we need to also free this
+    // because we allocated memory on the heap we need to also free this
     free(error);
 }
 
